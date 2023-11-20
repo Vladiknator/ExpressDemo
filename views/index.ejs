@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Home Inventory</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Home Inventory</h1>
+        <div class="uiItem">
+            <h2>Add Item</h2>
+            <form action="/add" method="POST">
+                <input type="hidden" name="id" value="<%= selectedItem ? selectedItem.id : '' %>">
+                <input type="text" name="name" placeholder="Item Name" value="<%= selectedItem ? selectedItem.name : '' %>" required>
+                <select name="category">
+                    <% for(let i=0; i<categories.length; i++) {%>
+                        <option value="<%= categories[i] %>" <%= selectedItem && selectedItem.category === categories[i] ? 'selected' : '' %>><%= categories[i] %></option>
+                    <% } %>
+                </select>
+                <button type="submit">Add Item</button>
+            </form>
+        </div>
+        <div class="uiItem">
+            <h2>Add Category</h2>
+            <form action="/add-category" method="POST">
+                <input type="text" name="newCategory" placeholder="New Category" required>
+                <button type="submit">Add Category</button>
+            </form>
+        </div>
+        <br>
+        <div class="uiItem">
+            <h2>Items</h2>
+            <input type="text" id="search" placeholder="Search by name or category">
+            <script>
+                const search = document.getElementById('search');
+                search.addEventListener('keyup', () => {
+                    const query = search.value.toLowerCase();
+                    const items = document.getElementsByTagName('li');
+                    for (let i = 0; i < items.length; i++) {
+                        const itemName = items[i].getElementsByTagName('span')[0].innerText.toLowerCase();
+                        const itemCategory = items[i].getElementsByTagName('span')[1].innerText.toLowerCase();
+                        if (itemName.includes(query) || itemCategory.includes(query)) {
+                            items[i].style.display = '';
+                        } else {
+                            items[i].style.display = 'none';
+                        }
+                    }
+                });
+            </script>
+            <ul>
+                <% for(let i=0; i<items.length; i++) {%>
+                    <li>
+                        <span><%= items[i].name %></span> &nbsp-&nbsp <span><%= items[i].category %></span>
+                        <div class="actions">
+                            <form action="/delete" method="POST" style="display: inline;">
+                                <input type="hidden" name="itemId" value="<%= items[i].id %>">
+                                <button type="submit">Delete</button>
+                            </form>
+                            <a href="/edit/<%= items[i].id %>">Edit</a>
+                        </div>
+                    </li>
+                <% } %>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
